@@ -7,33 +7,30 @@
 # This assignment was written against the following Bash version:
 # GNU bash, version 4.4.19(1)-release (x86_64-pc-linux-gnu)
 
-# Declaring functions
-# Gets user input on whether they want to continue
-getContinue () {
-    read -p "Do you want to continue? (Y/N) " continue
-}
-
-# Gets user input for an integer and places it into an array
-getUserInput () {
-    read -p "Enter an integer: " integer
-    integers[integerPosition]=$integer
-    let "integerPosition=$integerPosition+1"
-}
+# Setting the version number
+VERSION=0.0.2
 
 # Begin
 # Declare integers array
 declare -a integers
 # Position indicator for integers array
 integerPosition=0
-# Declare and set initial continue value
-continue="y"
 
-# Keep retrieving user input until the user no longer wishes to continue
-while [ $continue = "Y" -o $continue = "y" ]; do
-    getUserInput
-    getContinue
+# Load the command line arguments into the integers array
+numArgs=$#
+
+# Check we have at least one argument passed
+if [[ $numArgs -eq 0 ]]; then
+    echo "No command line arguments were passed.  Exiting..."
+    exit 1
+fi
+
+# Iterate over all arguments adding them to the array
+for arg; do
+    integers[integerPosition]=$arg
+    ((integerPosition++))
 done
-    
+
 # Iterate through the array of inputs adding them together as we go
 total=0
 for i in "${integers[@]}"; do
@@ -47,7 +44,7 @@ done
 
 # Find the average of the inputs
 average=0
-let "average=$total/$integerPosition"
+average=$(bc <<< "scale=5;$total/$integerPosition")
 
 echo "Sum of integers: $total"
 echo "Average of integers: $average"
